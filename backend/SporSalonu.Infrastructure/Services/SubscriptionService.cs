@@ -76,7 +76,9 @@ public class SubscriptionService : ISubscriptionService
         var netTutar = paket.Fiyat - dto.IndirimTutari;
         if (netTutar < 0) throw new InvalidOperationException("İndirim tutarı paket fiyatından büyük olamaz.");
 
-        var bitisTarihi = dto.BaslangicTarihi.AddMonths(paket.AySayisi);
+        var bitisTarihi = paket.GunSayisi > 0
+            ? dto.BaslangicTarihi.AddDays(paket.GunSayisi)
+            : dto.BaslangicTarihi.AddMonths(paket.AySayisi);
         var kalanBakiye = netTutar - dto.PesinatTutari;
 
         var subscription = new MembershipSubscription

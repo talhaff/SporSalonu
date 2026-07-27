@@ -9,7 +9,7 @@ export default function QueryProvider({ children }: { children: React.ReactNode 
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000, // 1 dakika (Veriler 1 dk taze kabul edilecek)
+            staleTime: 0, // Veriler her zaman eski kabul edilecek ve sayfa geçişlerinde otomatik güncellenecek
             refetchOnWindowFocus: false, // Pencereye odaklanıldığında tekrar çekilmesini kapat
             retry: 1, // Hata anında sadece 1 kez daha dene
           },

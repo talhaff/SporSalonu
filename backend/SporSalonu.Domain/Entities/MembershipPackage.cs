@@ -9,6 +9,7 @@ public class MembershipPackage
     public int Id { get; set; }
     public string Ad { get; set; } = string.Empty;          // "1 Aylık Üyelik"
     public int AySayisi { get; set; }                        // 1, 3, 6, 12
+    public int GunSayisi { get; set; } = 0;                  // Günlük/haftalık paketler için gün sayısı (Örn: 1, 7)
     public decimal Fiyat { get; set; }                       // ₺ cinsinden
     public bool IsActive { get; set; } = true;
     public DateTime OlusturmaTarihi { get; set; } = DateTime.UtcNow;

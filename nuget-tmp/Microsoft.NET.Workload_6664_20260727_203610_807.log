@@ -1,0 +1,14 @@
+[2026-07-27 20:36:10.808] [00001A08] === Logging started ===
+[2026-07-27 20:36:10.814] [00001A08] Executing: "dotnet" build C:\Users\TALHA\Desktop\PROJELER\SporSalonu\backend\SporSalonu.API\SporSalonu.API.csproj /verbosity:quiet /nologo /p:PublishAot=false, PID: 6664, PPID: 37644
+[2026-07-27 20:36:10.815] [00001A08] IsElevated: False
+[2026-07-27 20:36:10.815] [00001A08] Is64BitProcess: True
+[2026-07-27 20:36:10.815] [00001A08] RebootPending: True
+[2026-07-27 20:36:10.815] [00001A08] ProcessorArchitecture: amd64
+[2026-07-27 20:36:10.815] [00001A08] HostArchitecture: x64
+[2026-07-27 20:36:10.815] [00001A08] SdkDirectory: 10.0.302
+[2026-07-27 20:36:10.815] [00001A08] VerifySignatures: False
+[2026-07-27 20:36:10.815] [00001A08] SDK feature band: 10.0.300
+[2026-07-27 20:36:17.190] [00001A08] Shutting down
+[2026-07-27 20:36:17.190] [00001A08] Shutdown completed.
+[2026-07-27 20:36:17.190] [00001A08] Restart required: False
+[2026-07-27 20:36:17.190] [00001A08] === Logging ended ===

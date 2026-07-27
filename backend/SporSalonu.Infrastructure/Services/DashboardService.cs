@@ -26,7 +26,7 @@ public class DashboardService : IDashboardService
     {
         var aktifUyeler = await _db.Members.CountAsync(m => m.IsActive);
         
-        var buAyBasi = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+        var buAyBasi = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         var aylikGelir = await _db.TransactionLogs
             .Where(t => t.Tip == TransactionType.Odeme && t.IslemTarihi >= buAyBasi)
             .SumAsync(t => t.Tutar);

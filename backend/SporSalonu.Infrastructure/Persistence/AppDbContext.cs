@@ -144,10 +144,12 @@ public class AppDbContext : DbContext
 
         // ── Seed: Üyelik Paketleri ─────────────────────────────
         modelBuilder.Entity<MembershipPackage>().HasData(
-            new MembershipPackage { Id = 1, Ad = "1 Aylık Üyelik",  AySayisi = 1,  Fiyat = 500m,  IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new MembershipPackage { Id = 2, Ad = "3 Aylık Üyelik",  AySayisi = 3,  Fiyat = 1350m, IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new MembershipPackage { Id = 3, Ad = "6 Aylık Üyelik",  AySayisi = 6,  Fiyat = 2400m, IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new MembershipPackage { Id = 4, Ad = "12 Aylık Üyelik", AySayisi = 12, Fiyat = 4200m, IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
+            new MembershipPackage { Id = 1, Ad = "1 Aylık Üyelik",  AySayisi = 1,  GunSayisi = 0, Fiyat = 500m,  IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new MembershipPackage { Id = 2, Ad = "3 Aylık Üyelik",  AySayisi = 3,  GunSayisi = 0, Fiyat = 1350m, IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new MembershipPackage { Id = 3, Ad = "6 Aylık Üyelik",  AySayisi = 6,  GunSayisi = 0, Fiyat = 2400m, IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new MembershipPackage { Id = 4, Ad = "12 Aylık Üyelik", AySayisi = 12, GunSayisi = 0, Fiyat = 4200m, IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new MembershipPackage { Id = 5, Ad = "Günlük Giriş",     AySayisi = 0,  GunSayisi = 1, Fiyat = 100m,  IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new MembershipPackage { Id = 6, Ad = "Haftalık Üyelik",   AySayisi = 0,  GunSayisi = 7, Fiyat = 400m,  IsActive = true, OlusturmaTarihi = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
         );
     }
 }

@@ -1,18 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { Users, Plus, Search, Loader2 } from "lucide-react";
+import { Users, Plus, Search, Loader2, Pencil, Trash2 } from "lucide-react";
 import AddMemberModal from "@/components/members/AddMemberModal";
+import EditMemberModal from "@/components/members/EditMemberModal";
 
 export default function MembersPage() {
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMemberId, setEditingMemberId] = useState<number | null>(null);
+  const [deletingMember, setDeletingMember] = useState<{ id: number; name: string } | null>(null);
+  const [deleteError, setDeleteError] = useState("");
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["members"],
     queryFn: async () => {
       const res = await api.get("/members");
       return res.data.data;
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await api.delete(`/members/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+      setDeletingMember(null);
+      setDeleteError("");
+    },
+    onError: (err: any) => {
+      setDeleteError(err.response?.data?.mesaj || "Üye silinirken bir hata oluştu.");
     },
   });
 
@@ -61,12 +81,13 @@ export default function MembersPage() {
                   <th className="pb-4 font-medium">Aktif Paket</th>
                   <th className="pb-4 font-medium">Bitiş Tarihi</th>
                   <th className="pb-4 font-medium text-right pr-4">Bakiye</th>
+                  <th className="pb-4 font-medium text-center w-24">İşlemler</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-sm">
                 {data?.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-500">
+                    <td colSpan={6} className="text-center py-8 text-gray-500">
                       Henüz kayıtlı üye bulunmamaktadır.
                     </td>
                   </tr>
@@ -99,6 +120,24 @@ export default function MembersPage() {
                           ₺{member.kalanBakiye.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                         </span>
                       </td>
+                      <td className="py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => setEditingMemberId(member.id)}
+                            className="p-1.5 hover:bg-white/10 rounded-lg text-blue-400 hover:text-blue-300 transition-all hover:scale-105"
+                            title="Düzenle"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeletingMember({ id: member.id, name: member.adSoyad })}
+                            className="p-1.5 hover:bg-white/10 rounded-lg text-red-400 hover:text-red-300 transition-all hover:scale-105"
+                            title="Sil"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -109,6 +148,47 @@ export default function MembersPage() {
       </div>
 
       {isModalOpen && <AddMemberModal onClose={() => setIsModalOpen(false)} />}
+      
+      {editingMemberId !== null && (
+        <EditMemberModal 
+          memberId={editingMemberId} 
+          onClose={() => setEditingMemberId(null)} 
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="glass-panel w-full max-w-md bg-slate-900/90 shadow-2xl p-6 relative">
+            <h3 className="text-xl font-bold mb-2 text-white">Üyeyi Sil</h3>
+            <p className="text-gray-400 text-sm mb-6">
+              <span className="text-white font-semibold">{deletingMember.name}</span> isimli üyeyi silmek (pasife almak) istediğinize emin misiniz? Bu işlem geri alınamaz.
+            </p>
+            {deleteError && (
+              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm mb-4">
+                {deleteError}
+              </div>
+            )}
+            <div className="flex justify-end gap-3">
+              <button 
+                type="button" 
+                onClick={() => { setDeletingMember(null); setDeleteError(""); }} 
+                className="px-4 py-2 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors text-sm"
+              >
+                İptal
+              </button>
+              <button 
+                type="button" 
+                disabled={deleteMutation.isPending}
+                onClick={() => deleteMutation.mutate(deletingMember.id)}
+                className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold shadow-lg transition-colors text-sm flex items-center gap-1.5"
+              >
+                {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Evet, Sil"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
