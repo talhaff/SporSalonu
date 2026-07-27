@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SporSalonu.API/SporSalonu.API.csproj" />
+  <Project Path="SporSalonu.Application/SporSalonu.Application.csproj" />
+  <Project Path="SporSalonu.Domain/SporSalonu.Domain.csproj" />
+  <Project Path="SporSalonu.Infrastructure/SporSalonu.Infrastructure.csproj" />
+</Solution>
