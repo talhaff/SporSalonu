@@ -15,6 +15,7 @@ export default function AddMemberModal({ onClose }: AddMemberModalProps) {
   const [soyad, setSoyad] = useState("");
   const [telefon, setTelefon] = useState("");
   const [email, setEmail] = useState("");
+  const [cardUid, setCardUid] = useState("");
   
   // Paket Seçim State
   const [seciliPaket, setSeciliPaket] = useState<number | "">("");
@@ -35,7 +36,7 @@ export default function AddMemberModal({ onClose }: AddMemberModalProps) {
   const mutation = useMutation({
     mutationFn: async () => {
       // 1. Üyeyi Kaydet
-      const memberRes = await api.post("/members", { ad, soyad, telefon, email });
+      const memberRes = await api.post("/members", { ad, soyad, telefon, email, cardUid });
       const memberId = memberRes.data.data.id;
 
       // 2. Eğer paket seçildiyse, aboneliği başlat
@@ -103,6 +104,11 @@ export default function AddMemberModal({ onClose }: AddMemberModalProps) {
               <div>
                 <label className="block text-sm text-gray-400 mb-1">E-posta (Opsiyonel)</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50" />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-sm text-gray-400 mb-1">RFID Kart ID (Okutunca otomatik dolar)</label>
+                <input type="text" value={cardUid} onChange={e => setCardUid(e.target.value)} placeholder="Kart okutun..."
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50" />
               </div>
             </div>

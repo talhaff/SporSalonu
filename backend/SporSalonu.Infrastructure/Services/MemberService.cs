@@ -48,6 +48,7 @@ public class MemberService : IMemberService
             m.Email,
             m.KayitTarihi,
             m.IsActive,
+            m.CardUid,
             m.Subscriptions.Select(s => new SubscriptionSummaryDto(
                 s.Id,
                 s.Package?.Ad ?? "-",
@@ -68,6 +69,7 @@ public class MemberService : IMemberService
             Soyad = dto.Soyad.Trim(),
             Telefon = dto.Telefon.Trim(),
             Email = dto.Email?.Trim(),
+            CardUid = string.IsNullOrWhiteSpace(dto.CardUid) ? null : dto.CardUid.Trim(),
             KayitTarihi = DateTime.UtcNow
         };
         _db.Members.Add(member);
@@ -84,6 +86,7 @@ public class MemberService : IMemberService
         member.Soyad = dto.Soyad.Trim();
         member.Telefon = dto.Telefon.Trim();
         member.Email = dto.Email?.Trim();
+        member.CardUid = string.IsNullOrWhiteSpace(dto.CardUid) ? null : dto.CardUid.Trim();
 
         await _db.SaveChangesAsync();
     }
@@ -104,6 +107,17 @@ public class MemberService : IMemberService
             .Include(m => m.TransactionLogs)
             .AsNoTracking()
             .FirstOrDefaultAsync(m => m.Telefon == telefon.Trim());
+
+        return m is null ? null : MapToListDto(m);
+    }
+
+    public async Task<MemberListDto?> GetByCardUidAsync(string cardUid)
+    {
+        var m = await _db.Members
+            .Include(m => m.Subscriptions).ThenInclude(s => s.Package)
+            .Include(m => m.TransactionLogs)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(m => m.CardUid == cardUid.Trim());
 
         return m is null ? null : MapToListDto(m);
     }
@@ -130,7 +144,8 @@ public class MemberService : IMemberService
             m.IsActive,
             aktifSub?.Package?.Ad,
             aktifSub?.BitisTarihi,
-            kalanBakiye
+            kalanBakiye,
+            m.CardUid
         );
     }
 }

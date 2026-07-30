@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { Users, CreditCard, Activity, ArrowUpRight, Loader2 } from "lucide-react";
+import { Users, CreditCard, Activity, ArrowUpRight, Loader2, DoorOpen, LogOut } from "lucide-react";
 
 export default function DashboardPage() {
   const { data: dashboardData, isLoading, error } = useQuery({
@@ -26,6 +26,16 @@ export default function DashboardPage() {
     return <div className="text-red-400 p-6 bg-red-500/10 rounded-xl">Veriler yüklenirken hata oluştu.</div>;
   }
 
+  const handleManualOverride = async (isEntry: boolean) => {
+    try {
+      await api.post("/hardware/manual-override", { isEntry });
+      // Toast gösterilebilir (SignalR zaten OnCheckIn veya success atarsa o da kullanılabilir ama override'da toast iyi olur)
+      alert(`Turnike ${isEntry ? "Giriş" : "Çıkış"} kapısı açıldı.`);
+    } catch (err) {
+      alert("Turnike açılamadı.");
+    }
+  };
+
   const stats = [
     { name: "Aktif Üyeler", value: dashboardData?.stats?.aktifUyeler || 0, icon: Users, color: "text-blue-400" },
     { name: "Aylık Gelir", value: `₺${dashboardData?.stats?.aylikGelir?.toLocaleString('tr-TR') || 0}`, icon: CreditCard, color: "text-emerald-400" },
@@ -39,9 +49,23 @@ export default function DashboardPage() {
           <h1 className="text-4xl font-black mb-2">Genel Bakış</h1>
           <p className="text-gray-400">Hoş geldiniz. Salonunuzun anlık durumu.</p>
         </div>
-        <Link href="/uyeler" className="bg-primary/20 text-primary border border-primary/50 hover:bg-primary/40 px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2">
-          Yeni Üye Ekle <ArrowUpRight className="w-4 h-4" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => handleManualOverride(true)}
+            className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500/40 px-5 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2"
+          >
+            <DoorOpen className="w-4 h-4" /> Turnike Giriş
+          </button>
+          <button 
+            onClick={() => handleManualOverride(false)}
+            className="bg-orange-500/20 text-orange-400 border border-orange-500/50 hover:bg-orange-500/40 px-5 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2"
+          >
+            <LogOut className="w-4 h-4" /> Turnike Çıkış
+          </button>
+          <Link href="/uyeler" className="bg-primary/20 text-primary border border-primary/50 hover:bg-primary/40 px-6 py-2.5 rounded-xl font-medium transition-all flex items-center gap-2 ml-4">
+            Yeni Üye Ekle <ArrowUpRight className="w-4 h-4" />
+          </Link>
+        </div>
       </header>
 
       {/* İstatistik Kartları */}

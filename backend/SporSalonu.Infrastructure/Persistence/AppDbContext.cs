@@ -30,6 +30,8 @@ public class AppDbContext : DbContext
             e.Property(m => m.Telefon).HasMaxLength(20).IsRequired();
             e.HasIndex(m => m.Telefon).IsUnique();
             e.Property(m => m.Email).HasMaxLength(150);
+            e.Property(m => m.CardUid).HasMaxLength(50);
+            e.HasIndex(m => m.CardUid).IsUnique();
         });
 
         // ── MembershipPackage ──────────────────────────────────

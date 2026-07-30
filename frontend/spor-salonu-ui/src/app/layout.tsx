@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
+import CheckInToastListener from "@/components/CheckInToastListener";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,7 +28,10 @@ export default function RootLayout({
           <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-600/10 blur-[120px]" />
         </div>
         
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <CheckInToastListener />
+        </QueryProvider>
       </body>
     </html>
   );

@@ -8,6 +8,8 @@ using SporSalonu.Application.Interfaces;
 using SporSalonu.Infrastructure.Persistence;
 using SporSalonu.Infrastructure.Services;
 using System.Text;
+using SporSalonu.Domain.Interfaces;
+using SporSalonu.API.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,9 @@ builder.Services.AddHangfire(cfg => cfg
 
 builder.Services.AddHangfireServer();
 
+// ── SignalR ───────────────────────────────────────────────────
+builder.Services.AddSignalR();
+
 // ── DI: Servisler ─────────────────────────────────────────────
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
@@ -33,6 +38,7 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<ICheckInService, CheckInService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<AuthService>();   // JWT generate için direct erişim
+builder.Services.AddScoped<ITurnstileService, MockTurnstileService>();
 
 // ── JWT Authentication ────────────────────────────────────────
 var jwtKey = builder.Configuration["Jwt:Key"]
@@ -115,6 +121,7 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<CheckInHub>("/hubs/checkin");
 
 // ── Hangfire Dashboard ────────────────────────────────────────
 app.UseHangfireDashboard("/hangfire", new DashboardOptions

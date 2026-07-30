@@ -18,6 +18,7 @@ export default function EditMemberModal({ memberId, onClose }: EditMemberModalPr
   const [soyad, setSoyad] = useState("");
   const [telefon, setTelefon] = useState("");
   const [email, setEmail] = useState("");
+  const [cardUid, setCardUid] = useState("");
   const [error, setError] = useState("");
 
   // Fetch Member Details
@@ -36,6 +37,7 @@ export default function EditMemberModal({ memberId, onClose }: EditMemberModalPr
       setSoyad(member.soyad || "");
       setTelefon(member.telefon || "");
       setEmail(member.email || "");
+      setCardUid(member.cardUid || "");
     }
   }, [member]);
 
@@ -46,6 +48,7 @@ export default function EditMemberModal({ memberId, onClose }: EditMemberModalPr
         soyad,
         telefon,
         email,
+        cardUid,
       });
     },
     onSuccess: () => {
@@ -130,6 +133,16 @@ export default function EditMemberModal({ memberId, onClose }: EditMemberModalPr
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm text-gray-400 mb-1">RFID Kart ID</label>
+                  <input
+                    type="text"
+                    value={cardUid}
+                    onChange={(e) => setCardUid(e.target.value)}
+                    placeholder="Kart okutun..."
                     className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
                   />
                 </div>

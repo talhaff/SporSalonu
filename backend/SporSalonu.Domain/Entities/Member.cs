@@ -12,6 +12,7 @@ public class Member
     public string? Email { get; set; }
     public DateTime KayitTarihi { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
+    public string? CardUid { get; set; } // RFID Kart UID'si
 
     // Navigation Properties
     public ICollection<MembershipSubscription> Subscriptions { get; set; } = new List<MembershipSubscription>();

@@ -10,4 +10,5 @@ public interface IMemberService
     Task UpdateAsync(int id, UpdateMemberDto dto);
     Task DeleteAsync(int id);
     Task<MemberListDto?> GetByPhoneAsync(string telefon);
+    Task<MemberListDto?> GetByCardUidAsync(string cardUid);
 }

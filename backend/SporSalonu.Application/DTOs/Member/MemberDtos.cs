@@ -4,14 +4,16 @@ public record CreateMemberDto(
     string Ad,
     string Soyad,
     string Telefon,
-    string? Email
+    string? Email,
+    string? CardUid
 );
 
 public record UpdateMemberDto(
     string Ad,
     string Soyad,
     string Telefon,
-    string? Email
+    string? Email,
+    string? CardUid
 );
 
 public record MemberListDto(
@@ -23,7 +25,8 @@ public record MemberListDto(
     bool IsActive,
     string? AktifPaket,
     DateTime? UyelikBitisi,
-    decimal KalanBakiye
+    decimal KalanBakiye,
+    string? CardUid
 );
 
 public record MemberDetailDto(
@@ -34,6 +37,7 @@ public record MemberDetailDto(
     string? Email,
     DateTime KayitTarihi,
     bool IsActive,
+    string? CardUid,
     List<SubscriptionSummaryDto> Subscriptions
 );
 
