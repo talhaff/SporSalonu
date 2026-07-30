@@ -30,4 +30,9 @@ public class CheckInController : ControllerBase
     [HttpGet("bugun")]
     public async Task<IActionResult> TodayCheckIns() =>
         Ok(new { basarili = true, data = await _checkInService.GetTodayCheckInsAsync() });
+
+    /// <summary>Tüm geçiş (Check-in / Check-out) geçmişi.</summary>
+    [HttpGet("gecmis")]
+    public async Task<IActionResult> CheckInHistory() =>
+        Ok(new { basarili = true, data = await _checkInService.GetCheckInHistoryAsync() });
 }

@@ -88,7 +88,7 @@ export default function DashboardPage() {
         <div className="glass-panel p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold">Son Check-in İşlemleri</h3>
-            <Link href="/checkin" className="text-sm text-primary hover:underline">Tümünü Gör</Link>
+            <Link href="/checkin-gecmisi" className="text-sm text-primary hover:underline">Tümünü Gör</Link>
           </div>
           <div className="space-y-4">
             {dashboardData?.sonCheckInler?.length === 0 ? (
@@ -102,7 +102,10 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <p className="font-semibold">{log.uyeAdSoyad || "Bilinmeyen Üye"}</p>
-                      <p className="text-xs text-gray-400">Bugün</p>
+                      <p className="text-xs text-gray-400">
+                        {log.girisTarihi ? `Giriş: ${new Date(log.girisTarihi).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}` : 'Bugün'}
+                        {log.cikisTarihi ? ` • Çıkış: ${new Date(log.cikisTarihi).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}` : ''}
+                      </p>
                     </div>
                   </div>
                   <span className={`px-3 py-1 text-xs font-bold rounded-full border ${

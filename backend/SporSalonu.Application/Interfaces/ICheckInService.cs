@@ -12,4 +12,6 @@ public interface ICheckInService
     Task<CheckInResultDto> ProcessCheckInAsync(CheckInRequestDto dto);
 
     Task<List<CheckInResultDto>> GetTodayCheckInsAsync();
+
+    Task<List<CheckInHistoryDto>> GetCheckInHistoryAsync();
 }

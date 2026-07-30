@@ -42,25 +42,19 @@ public class HardwareController : ControllerBase
             return BadRequest(new { Message = "Bu karta sahip bir üye bulunamadı." });
         }
 
-        // ProcessCheckInAsync memberId alır ve gerekli iş kurallarını işletir
-        var result = await _checkInService.ProcessCheckInAsync(new CheckInRequestDto(member.Id));
+        // ProcessCheckInAsync memberId ve IsEntry alır ve gerekli iş kurallarını işletir
+        var result = await _checkInService.ProcessCheckInAsync(new CheckInRequestDto(member.Id, request.IsEntry));
 
         if (result.IzinVerildi)
         {
-            await _turnstileService.OpenGateAsync(isEntry: true);
+            await _turnstileService.OpenGateAsync(isEntry: request.IsEntry);
         }
 
         // SignalR ile anlık bildirim fırlat
         await _hubContext.Clients.All.SendAsync("OnCheckIn", result);
 
-        if (result.IzinVerildi)
-        {
-            return Ok(result);
-        }
-        else
-        {
-            return BadRequest(result);
-        }
+        // Donanıma her halükarda 200 OK dönüyoruz, donanım `IzinVerildi` değerine bakarak kapıyı açıp açmayacağına karar verir.
+        return Ok(result);
     }
 
     [HttpPost("manual-override")]
@@ -76,11 +70,19 @@ public class HardwareController : ControllerBase
 
         return StatusCode(500, new { Message = "Donanım servisiyle iletişim kurulamadı." });
     }
+
+    [HttpGet("debug")]
+    public async Task<IActionResult> DebugMembers()
+    {
+        var members = await _memberService.GetAllAsync();
+        return Ok(members.Select(m => new { m.AdSoyad, m.CardUid }));
+    }
 }
 
 public class HardwareCheckInRequest
 {
     public string CardUid { get; set; } = string.Empty;
+    public bool IsEntry { get; set; } = true;
 }
 
 public class ManualOverrideRequest

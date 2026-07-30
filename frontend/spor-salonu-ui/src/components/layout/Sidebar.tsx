@@ -8,6 +8,7 @@ import {
   Users, 
   CreditCard, 
   QrCode, 
+  Clock,
   LogOut, 
   Bell
 } from "lucide-react";
@@ -18,6 +19,7 @@ const menuItems = [
   { name: "Müşteriler", href: "/uyeler", icon: Users },
   { name: "Kasa & Finans", href: "/finans", icon: CreditCard },
   { name: "Check-in", href: "/checkin", icon: QrCode },
+  { name: "Geçiş Geçmişi", href: "/checkin-gecmisi", icon: Clock },
 ];
 
 export default function Sidebar() {

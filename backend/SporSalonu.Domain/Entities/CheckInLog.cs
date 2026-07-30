@@ -9,6 +9,7 @@ public class CheckInLog
     public int MemberId { get; set; }
 
     public DateTime GirisTarihi { get; set; } = DateTime.UtcNow;
+    public DateTime? CikisTarihi { get; set; }
     public bool IzinVerildi { get; set; }
     public string? RedSebebi { get; set; }   // "Üyelik süresi dolmuş", "Borç var", "Dondurulmuş" vb.
 

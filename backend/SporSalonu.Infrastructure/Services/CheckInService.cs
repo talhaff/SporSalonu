@@ -36,6 +36,37 @@ public class CheckInService : ICheckInService
 
         var simdi = DateTime.UtcNow;
 
+        // EĞER ÇIKIŞ İŞLEMİ İSE:
+        if (!dto.IsEntry)
+        {
+            var enSonGirisLog = await _db.CheckInLogs
+                .Where(c => c.MemberId == member.Id && c.IzinVerildi && c.CikisTarihi == null)
+                .OrderByDescending(c => c.GirisTarihi)
+                .FirstOrDefaultAsync();
+
+            if (enSonGirisLog != null)
+            {
+                enSonGirisLog.CikisTarihi = simdi;
+                await _db.SaveChangesAsync();
+                return new CheckInResultDto(true, $"İyi günler, {member.Ad}! Çıkışınız kaydedildi.", $"{member.Ad} {member.Soyad}", null, enSonGirisLog.GirisTarihi, simdi);
+            }
+            else
+            {
+                // Giriş kaydı olmadan doğrudan çıkış okutulduysa yeni log atalım
+                var cikisLog = new CheckInLog
+                {
+                    MemberId = member.Id,
+                    GirisTarihi = simdi,
+                    CikisTarihi = simdi,
+                    IzinVerildi = true,
+                    RedSebebi = "Doğrudan Çıkış"
+                };
+                _db.CheckInLogs.Add(cikisLog);
+                await _db.SaveChangesAsync();
+                return new CheckInResultDto(true, $"İyi günler, {member.Ad}! Çıkışınız kaydedildi.", $"{member.Ad} {member.Soyad}", null, simdi, simdi);
+            }
+        }
+
         // Kural 1: Aktif üyelik kontrolü
         var aktifUyelik = member.Subscriptions
             .FirstOrDefault(s => s.Durum == SubscriptionStatus.Aktif && s.BitisTarihi > simdi);
@@ -57,12 +88,12 @@ public class CheckInService : ICheckInService
         if (aktifUyelik.KalanBakiye > 0)
         {
             await KaydetCheckIn(member.Id, false, $"Gecikmiş borç: {aktifUyelik.KalanBakiye:C}");
-            return new CheckInResultDto(false, $"Gecikmiş borcunuz bulunmaktadır: {aktifUyelik.KalanBakiye:C2}. Lütfen ödenme yapınız.", $"{member.Ad} {member.Soyad}", aktifUyelik.BitisTarihi);
+            return new CheckInResultDto(false, $"Gecikmiş borcunuz bulunmaktadır: {aktifUyelik.KalanBakiye:C2}. Lütfen ödeme yapınız.", $"{member.Ad} {member.Soyad}", aktifUyelik.BitisTarihi);
         }
 
         // Tüm kontroller geçti: GİRİŞ İZNİ
-        await KaydetCheckIn(member.Id, true, null);
-        return new CheckInResultDto(true, $"Hoş geldiniz, {member.Ad}! Üyeliğiniz {aktifUyelik.BitisTarihi:dd.MM.yyyy} tarihine kadar geçerlidir.", $"{member.Ad} {member.Soyad}", aktifUyelik.BitisTarihi);
+        var yeniLog = await KaydetCheckIn(member.Id, true, null);
+        return new CheckInResultDto(true, $"Hoş geldiniz, {member.Ad}! Üyeliğiniz {aktifUyelik.BitisTarihi:dd.MM.yyyy} tarihine kadar geçerlidir.", $"{member.Ad} {member.Soyad}", aktifUyelik.BitisTarihi, yeniLog.GirisTarihi, null);
     }
 
     public async Task<List<CheckInResultDto>> GetTodayCheckInsAsync()
@@ -77,21 +108,45 @@ public class CheckInService : ICheckInService
 
         return loglar.Select(l => new CheckInResultDto(
             l.IzinVerildi,
-            l.RedSebebi ?? "Giriş onaylandı",
+            l.RedSebebi ?? (l.CikisTarihi != null ? "Çıkış Yapıldı" : "Giriş Onaylandı"),
             l.Member != null ? $"{l.Member.Ad} {l.Member.Soyad}" : "-",
-            null
+            null,
+            l.GirisTarihi,
+            l.CikisTarihi
         )).ToList();
     }
 
-    private async Task KaydetCheckIn(int memberId, bool izin, string? sebep)
+    public async Task<List<CheckInHistoryDto>> GetCheckInHistoryAsync()
     {
-        _db.CheckInLogs.Add(new CheckInLog
+        var loglar = await _db.CheckInLogs
+            .Include(c => c.Member)
+            .OrderByDescending(c => c.GirisTarihi)
+            .Take(100)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return loglar.Select(l => new CheckInHistoryDto(
+            l.Id,
+            l.Member != null ? $"{l.Member.Ad} {l.Member.Soyad}" : "Bilinmeyen Üye",
+            l.Member?.Telefon ?? "-",
+            l.GirisTarihi,
+            l.CikisTarihi,
+            l.IzinVerildi,
+            l.RedSebebi
+        )).ToList();
+    }
+
+    private async Task<CheckInLog> KaydetCheckIn(int memberId, bool izin, string? sebep)
+    {
+        var log = new CheckInLog
         {
             MemberId = memberId,
             GirisTarihi = DateTime.UtcNow,
             IzinVerildi = izin,
             RedSebebi = sebep
-        });
+        };
+        _db.CheckInLogs.Add(log);
         await _db.SaveChangesAsync();
+        return log;
     }
 }
